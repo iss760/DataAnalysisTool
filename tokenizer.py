@@ -59,8 +59,6 @@ class Tokenizer:
         elif type(data) is list:
             tokenized_sentences = []
             for i, sentence in enumerate(data):
-                sentence = str(sentence)
-
                 # 메모리 에러 방지를 위한 sleep
                 if self.SLEEP_INTERVAL > 0 and i % self.SLEEP_INTERVAL:
                     sleep(3)
@@ -73,7 +71,3 @@ class Tokenizer:
         else:
             print("data type error")
             raise ValueError
-
-
-tkn = Tokenizer()
-print(tkn.tokenizer(['나는 무엇으로 사는가?', '이거 맛있네'], tkn_method='morphs'))
