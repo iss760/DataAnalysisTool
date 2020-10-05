@@ -7,11 +7,12 @@ class MyWordCloud:
     def __init__(self):
         self.FILE_PATH = ''
         self.FILE_NAME = ''
-        self.FONT_NAME = "./NanumFontSetup_TTF_ALL/NanumSquareB.ttf"
+        self.FONT_NAME = "./NanumSquareB.ttf"
 
-    def draw_word_cloud(self, text, width=1500, height=1000, background_color='white'):
+
+    def draw_word_cloud(self, text, width=1600, height=800, background_color='white'):
         word_cloud = WordCloud(font_path=self.FONT_NAME,
-                               max_font_size='100', min_font_size='10',
+                               max_font_size=100, min_font_size=10,
                                width=width, height=height,
                                background_color=background_color)
         word_cloud = word_cloud.generate_from_text(text)
@@ -20,6 +21,7 @@ class MyWordCloud:
         plt.show()
 
 
-data = "dog dog cat cat dog cat dog cat"
+data = "dog dog cat cat dog cat dog cat phone play move play"
 mwc = MyWordCloud()
 mwc.draw_word_cloud(data)
+
