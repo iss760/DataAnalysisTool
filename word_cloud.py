@@ -1,4 +1,4 @@
-import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
@@ -9,8 +9,7 @@ class MyWordCloud:
         self.FILE_NAME = ''
         self.FONT_NAME = "./NanumSquareB.ttf"
 
-
-    def draw_word_cloud(self, text, width=1600, height=800, background_color='white'):
+    def _draw_word_cloud(self, text, width=1600, height=800, background_color='white'):
         word_cloud = WordCloud(font_path=self.FONT_NAME,
                                max_font_size=100, min_font_size=10,
                                width=width, height=height,
@@ -20,8 +19,20 @@ class MyWordCloud:
         plt.axis('off')
         plt.show()
 
+    def draw_word_cloud(self, data, width=1600, height=800, background_color='white'):
+        if type(data[0]) == list:
+            data = [b for a in data for b in a]
+            data = ' '.join(data)
+        elif type(data) == list:
+            data = ' '.join(data)
+        elif type(data) == str:
+            data = data
+        else:
+            print('Input type error (Input type : list[[str]] or list[] or str')
 
-data = "dog dog cat cat dog cat dog cat phone play move play"
+        self._draw_word_cloud(data, width=width, height=height, background_color=background_color)
+
+
+corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'phone'], ['dog', 'dog', 'cat'], ['coffee', 'dog', 'cat'], ['cow']]
 mwc = MyWordCloud()
-mwc.draw_word_cloud(data)
-
+mwc.draw_word_cloud(corpus)
