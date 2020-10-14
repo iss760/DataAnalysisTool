@@ -33,6 +33,7 @@ class MyWordCloud:
         self._draw_word_cloud(data, width=width, height=height, background_color=background_color)
 
 
-corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'phone'], ['dog', 'dog', 'cat'], ['coffee', 'dog', 'cat'], ['cow']]
-mwc = MyWordCloud()
-mwc.draw_word_cloud(corpus)
+if __name__ == '__main__':
+    corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'phone'], ['dog', 'dog', 'cat'], ['coffee', 'dog', 'cat'], ['cow']]
+    mwc = MyWordCloud()
+    mwc.draw_word_cloud(corpus)
