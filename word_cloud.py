@@ -31,12 +31,12 @@ class MyWordCloud:
 
     def _multi_color_func(self, word=None, font_size=None, position=None, orientation=None,
                           font_path=None, random_state=None):
-        colors = [[4, 77, 82],
-                  [25, 74, 85],
-                  [82, 43, 84],
-                  [158, 48, 79]]
+        colors = [[4, 87, 72],
+                  [25, 84, 75],
+                  [82, 53, 74],
+                  [158, 58, 69]]
         rand = random_state.randint(0, len(colors) - 1)
-        return "hsl({}, {}%, {}%)".format(colors[rand][0], colors[rand][1] + 10, colors[rand][2] - 10)
+        return "hsl({}, {}%, {}%)".format(colors[rand][0], colors[rand][1], colors[rand][2])
 
     def _draw_word_cloud(self, word2cnt):
         word_cloud = WordCloud(font_path=self.FONT_NAME,
@@ -76,15 +76,14 @@ class MyWordCloud:
 
     def set_color_func(self, word_color):
         if word_color == 'similar':
-            self.color_func = self._similar_color_func()
+            self.color_func = self._similar_color_func
         elif word_color == 'multi':
-            self.color_func = self._multi_color_func()
+            self.color_func = self._multi_color_func
         else:
             self.color_func = None
 
     def draw_word_cloud(self, data, width=1200, height=800, background_color='white',
                         word_color="standard", is_font_size_norm=False):
-
         # 기본값 세팅
         self.set_init(width=width, height=height, background_color=background_color,
                       word_color=word_color, is_font_size_norm=is_font_size_norm)
@@ -103,4 +102,4 @@ if __name__ == '__main__':
     # corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'tiger'], ['dog', 'dog', 'cat'], ['cow']]
     dic = {'dog': 10, 'cat': 6, 'horse': 5, 'cow': 4, 'rabbit': 7, 'tiger': 2}
     mwc = MyWordCloud()
-    mwc.draw_word_cloud(dic)
+    mwc.draw_word_cloud(dic, word_color='multi')
