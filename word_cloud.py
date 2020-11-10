@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
 from wordcloud import WordCloud
 
 
@@ -73,6 +74,15 @@ class MyWordCloud:
             raise ValueError
 
         return word2cnt
+
+    def normalize_data(self, data):
+        max_val = max(data.values())
+        min_val = min(data.values())
+
+        for k, v in data.items():
+            data[k] = (v - min_val + 1) / (max_val - min_val + 1) * 100
+
+        return data
 
     def set_color_func(self, word_color):
         if word_color == 'similar':
