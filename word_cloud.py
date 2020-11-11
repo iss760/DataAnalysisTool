@@ -16,6 +16,9 @@ class MyWordCloud:
         self.color_func = None
         self.is_font_size_norm = False
 
+        self.n_top = 3
+        self.word_pool = []
+
     def set_init(self, width, height, background_color, word_color, is_font_size_norm):
         self.width = width
         self.height = height
@@ -51,27 +54,37 @@ class MyWordCloud:
         plt.show()
 
     def count_word(self, data):
+        # 딕셔너리 만들기
         word2cnt = {}
         for word in data:
             if word not in word2cnt.keys():
                 word2cnt[word] = 1
             else:
                 word2cnt[word] += 1
+
+        # 딕셔너리 정렬
+        sorted(word2cnt.items(), key=lambda x: x[1], reverse=True)
+
         return word2cnt
 
-    def normalize_input_data(self, data):
-        if type(data) == dict:
-            word2cnt = data
-        elif type(data) == list:
-            word2cnt = self.count_word(data)
-        elif type(data[0]) == list:
-            temp = []
-            for words in data:
-                temp += words
-            word2cnt = self.count_word(temp)
-        else:
+    def conversion_to_dict(self, data):
+        if type(data) not in (dict, list):
             print('Input type error (Input type : list[[str]] or list[] or str')
             raise ValueError
+        else:
+            if type(data) == dict:
+                word2cnt = data
+            elif type(data[0]) == list:
+                # 하나의 리스트로 결합
+                temp = []
+                for words in data:
+                    temp += words
+                word2cnt = self.count_word(temp)    # 딕셔너리로 변환
+            elif type(data) == list:
+                word2cnt = self.count_word(data)    # 딕셔너리로 변환
+            else:
+                print('Input type error (Input type : list[[str]] or list[] or str')
+                raise ValueError
 
         return word2cnt
 
@@ -101,15 +114,18 @@ class MyWordCloud:
         # 워드클라우드 글자색 선택 (standard or similar or multi)
         self.set_color_func(word_color)
 
-        # 입력 데이터 정규화 (list or list[list] or dict -> dict)
-        word2cnt = self.normalize_input_data(data)
+        # 입력 데이터 형변환 (list or list[list] or dict -> dict)
+        word2cnt = self.conversion_to_dict(data)
+
+        if is_font_size_norm:
+            word2cnt = self.normalize_data(word2cnt)
 
         # 워드클라우드 출력
         self._draw_word_cloud(word2cnt)
 
 
 if __name__ == '__main__':
-    # corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'tiger'], ['dog', 'dog', 'cat'], ['cow']]
-    dic = {'dog': 10, 'cat': 6, 'horse': 5, 'cow': 4, 'rabbit': 7, 'tiger': 2}
+    corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'tiger'], ['dog', 'dog', 'cat'], ['cow']]
+    #dic = {'dog': 10, 'cat': 6, 'horse': 5, 'cow': 4, 'rabbit': 7, 'tiger': 2}
     mwc = MyWordCloud()
-    mwc.draw_word_cloud(dic, word_color='multi')
+    mwc.draw_word_cloud(corpus, word_color='multi', is_font_size_norm=True)
