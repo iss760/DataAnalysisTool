@@ -29,7 +29,7 @@ class Tokenizer:
 
         if tkn_method == 'morphs':
             temp = self.okt.morphs(sentence, stem=stem, norm=norm)
-        elif tkn_method == 'none':
+        elif tkn_method == 'noun':
             temp = self.okt.nouns(sentence)
         else:
             temp = None
