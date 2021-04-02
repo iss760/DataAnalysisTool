@@ -10,13 +10,9 @@ class Filtering:
         self.FILTERING_FILE_NAME = ""
         self.FILTERING_KEYWORD = []
 
-    def __add__(self, other):
-
     def make_filtering_keyword(self, path, name):
         self.FILE_PATH = path
         self.FILE_NAME = name
 
     def filtering(self, data, col_name):
         data = data[~data[col_name].str.contains('|'.join(self.FILTERING_KEYWORD), na=False)]
-
-    def filtering_
