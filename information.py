@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt
 
 
 class Information:
-    def __init__(self):
-       pass
-
-    def print_basic_data_info(self, data):
+    @staticmethod
+    # 데이터의 기본정보를 출력하는 함수
+    def print_basic_info(data):
         """
         :param data: (DataFrame) data
         :return: None
@@ -18,19 +17,31 @@ class Information:
         print("Data Sample (tail) \n", data.tail(), end='\n\n')
         print("Data Null Sum \n", data.isnull().sum(), end='\n\n')
 
+    @staticmethod
+    # 수치형 데이터의 평균, 중위값 등 기본적 통계 지표를 출력하는 함수
+    def print_statistics_ind(data, col_name):
+        """
+        :param data: (DataFrame) data
+        :param col_name: (str) Column name for which you want to see indicators
+        :return: None
+        """
+        print("Data Mean : ", data[col_name].mean())
+        print("Data Median : ", data[col_name].median())
+        print("Data Variance : {0: .3f}".format(data[col_name].var()))
+        print("Data Standard deviation: {0: .3f}".format(data[col_name].std()))
+        print()
+
 
 class Visualization:
-    def __init__(self):
-        pass
-
+    @staticmethod
     # 파이차트 시각화 함수
-    def pie_chart(self, data, x_name, y_name=None):
+    def pie_chart(data, x_name, y_name=None):
         """
-                        :param data: (dataFrame) data
-                        :param x_name: (str) independent variable column name
-                        :param y_name: (str) dependent variable column name, default=None
-                        :return: None
-                        """
+        :param data: (dataFrame) data
+        :param x_name: (str) independent variable column name
+        :param y_name: (str) dependent variable column name, default=None
+        :return: None
+        """
         x_feature_ratio = data[x_name].value_counts(sort=False)
         x_feature_size = x_feature_ratio.size
         x_feature_index = x_feature_ratio.index
