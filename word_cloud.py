@@ -153,6 +153,6 @@ class MyWordCloud:
 
 if __name__ == '__main__':
     corpus = [['dog', 'dog', 'cat', 'dog', 'cow', 'cat', 'tiger'], ['dog', 'dog', 'cat'], ['cow']]
-    #dic = {'dog': 10, 'cat': 6, 'horse': 5, 'cow': 4, 'rabbit': 7, 'tiger': 2}
+    # dic = {'dog': 10, 'cat': 6, 'horse': 5, 'cow': 4, 'rabbit': 7, 'tiger': 2}
     mwc = MyWordCloud()
     mwc.draw_word_cloud(corpus, word_color='multi', is_font_size_norm=True)
