@@ -34,9 +34,9 @@ class TextTypeProcessing:
             r'[!\uFF01\u01C3\u203C\u2048\u2049\u26A0\u2755\u2757\u2762\u2763\uA71D-\uA71F\uFE57\u055C\u07F9\u109F\u1944]')
         self.bullet = re.compile(
             r'[\u318D\u00B7\u0387\u05BC\u16EB\u2022\u2023\u2027\u2043\u204C\u204D\u2218\u2219\u22C5\u23FA\u25CF\u25E6\u26AB\u2981\u2E30\u2E31\u2E33\u30FB\uA78F\uFF65]')
-        self.hypen = re.compile(
+        self.hyphen = re.compile(
             r'[\u00AF\u2013\u2015\u2212\u00AD\u2010\u2011\u058A\u1806\u2E17\u30FB\uFE63\uFF0D\uFF65]')
-        self.double_hypen = re.compile(r'[=\u207C\u208C\u2A74\u1400\u2E17\u2E40\u30A0\uA78A\u3013\uFF1D]')
+        self.double_hyphen = re.compile(r'[=\u207C\u208C\u2A74\u1400\u2E17\u2E40\u30A0\uA78A\u3013\uFF1D]')
         self.question_mark = re.compile(
             r'[\u003F\u00BF\u055E\u061F\u2E2E\uFF1F\u1367\uA60F\u2047\uFE56\u2048\u2049\u203D\u0294\uFFFD\u225F\u2A7B\u2A7C]')
         self.single_quotation_mark = re.compile(
@@ -195,7 +195,93 @@ class TextTypeProcessing:
         }
 
         # HTML 모음
-        self.html_tags = ['<em>', '</em>', '<br>', '</br>']
+        self.html_tags = ['<em>', '</em>', '<e m>', '<br>', '</br>']
+
+        # 맞춤법 교정
+        self.grammar = {
+            '읍니다': '습니다',
+            '먾이': '많이',
+            '같ㄱ아요': '같아요',
+            '인덩': '인정',
+            '조아': '좋아',
+            '조으': '좋아',
+            '좋아용': '좋아요',
+        }
+
+        # 자주쓰이는 영어 표현 한국어로 변환
+        self.en2kr = {
+            r'or': '또는',
+            r'and': '그리고',
+            r'go{2,}d': '좋다',
+            r'Go{2,}d': '좋다 ',
+            r'GO{2,}D': '좋다',
+            r'Go{2,}D': '좋다',
+        }
+
+        # 자주 쓰이는 밈 표현 한국어로 변환
+        self.meme = {
+            r'ㅋ+': '',
+            r'ㅎ+': '',
+            r'ㅜ+': '',
+            r'\^\^': '',
+            r':\)': '',
+            r'~+': '',
+            r'!+': ''
+        }
+
+        self.kiwi_tag2pos = {
+            'NNG': '일반명사',
+            'NNP': '고유명사',
+            'NNB': '의존명사',
+            'NR': '수사',
+            'NP': '대명사',
+            'VV': '동사',
+            'VA': '형용사',
+            'VX': '보조용언',
+            'VCP': '긍정 지시사',    # ~이다
+            'VCN': '부정 지시사',    # ~아니다
+            'MM': '관형사',
+            'MAG': '일반부사',
+            'MAJ': '접속부사',
+            'IC': '감탄사',
+            'JKS': '주격조사',
+            'JKC': '보격조사',
+            'JKG': '관형격조사',
+            'JKO': '목적격조사',
+            'JKB': '부사격조사',
+            'JKV': '호격조사',
+            'JKQ': '인용격조사',
+            'JX': '보조사',
+            'JC': '접속조사',
+            'EP': '선어말어미',
+            'EF': '종결어미',
+            'EC': '연결어미',
+            'ETN': '명사형 전성어미',
+            'ETM': '관형형 전성어미',
+            'XPN': '체언접두사',
+            'XSN': '명사 파생접미사',
+            'XSV': '동사 파생접미사',
+            'XSA': '형용사 파생접미사',
+            'XR': '어근',
+            'SF': '종결부호',
+            'SP': '구분구호',
+            'SS': '인용부호 및 괄호',
+            'SE': '줄임표',
+            'SO': '붙임표',
+            'SW': '기타특수문자',
+            'SL': '알파벳',
+            'SH': '한자',
+            'SN': '숫자',
+            'UN': '분석불능',
+            'W_URL': 'URL',
+            'W_EMAIL': '이메일',
+            'W_HASHTAG': '해시태그',
+            'W_MENTION': '멘션'
+        }
+
+    # 영어로된 kiwi 태그를 한국어 형태소로 변환하는 함수
+    def convert_tag2pos(self, s):
+        return self.kiwi_tag2pos[s]
 
     # FullWidth(전자) 문자를 HalfWidth(반자) 문자로 변환해주는 메서드
     def convert_full_to_half(self, df, col):
@@ -207,21 +293,74 @@ class TextTypeProcessing:
         return df.replace({col: self.unicode_full2half})
 
     # HTML Tag 제거 메서드
-    def remove_html_cd(self, df, col):
+    def remove_html_tags(self, df, col):
         """
         :param df: (DataFrame) data
         :param col: (str or list) column name or columns name
         :return: converted data to half width from full width
         """
-        temp_dict = dict()
         for tag in self.html_tags:
-            temp_dict[tag] = " "
+            df[col] = df[col].str.replace(tag, " ")
 
-        return df.replace({col: temp_dict})
+        return df
 
+    # 특수문자 제거 메서드
+    def remove_special_char(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        for tag in self.html_tags:
+            df[col] = df[col].str.replace(tag, " ")
+
+        return df
+
+    # 맞춤법 교정 메서드
+    def correct_grammar(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        for k, v in self.grammar.items():
+            df[col] = df[col].str.replace(k, v)
+
+        return df
+
+    # 자주 쓰는 영어 표현을 한국어로 변환하는 메서드
+    def convert_en_to_kr(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        for en, kr in self.en2kr.items():
+            df[col].replace(to_replace=en, value=kr, regex=True, inplace=True)
+
+        return df
+
+    # 자주 쓰는 밈을 형태소 분석이 가능하도록 변환하는 메서드
+    # 밈은 ㅋㅋㅋ, ㅎ, ^^ 등을 모두 포함함
+    def convert_meme(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        for k, v in self.meme.items():
+            df[col].replace(to_replace=k, value=v, regex=True, inplace=True)
+
+        return df
+
+    # 영어로만 이루어진 데이터(행) 제거 메서드
+    def remove_only_en(self, df, col):
+        temp = df[col].str.contains(r'[A-Za-z]')
+        temp = df[temp]
+        print(temp[col].values)
 
     def unicode_norm(self):
-
+        pass
 
 
 class Filtering:
