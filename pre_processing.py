@@ -194,9 +194,31 @@ class TextTypeProcessing:
             '\uffE8': '|'
         }
 
+        # HTML 모음
+        self.html_tags = ['<em>', '</em>', '<br>', '</br>']
+
     # FullWidth(전자) 문자를 HalfWidth(반자) 문자로 변환해주는 메서드
-    def convert_full_to_half(self):
-        self.unicode_full2half
+    def convert_full_to_half(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        return df.replace({col: self.unicode_full2half})
+
+    # HTML Tag 제거 메서드
+    def remove_html_cd(self, df, col):
+        """
+        :param df: (DataFrame) data
+        :param col: (str or list) column name or columns name
+        :return: converted data to half width from full width
+        """
+        temp_dict = dict()
+        for tag in self.html_tags:
+            temp_dict[tag] = " "
+
+        return df.replace({col: temp_dict})
+
 
     def unicode_norm(self):
 
