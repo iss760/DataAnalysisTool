@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -28,6 +29,10 @@ class Information:
         print("Data Min : ", data[col_name].min())
         print("Data Mean : ", data[col_name].mean())
         print("Data Median : ", data[col_name].median())
+        print("Data Top 05% : ", np.percentile(data[col_name].values, 95))
+        print("Data Top 25% : ", np.percentile(data[col_name].values, 75))
+        print("Data Top 75% : ", np.percentile(data[col_name].values, 25))
+        print("Data Top 95%: ", np.percentile(data[col_name].values, 5))
         print("Data Variance : {0: .3f}".format(data[col_name].var()))
         print("Data Standard deviation: {0: .3f}".format(data[col_name].std()))
         print()
