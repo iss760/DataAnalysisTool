@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 
 # 기본 정보 출력 클래스
 class Information:
+    def __init__(self):
+        plt.rc('font', family='Malgun Gothic')
+        plt.text(0.3, 0.3, '한글', size=100)
+
     @staticmethod
     # 데이터의 기본정보를 출력하는 함수
     def print_basic_info(data):
@@ -19,25 +23,43 @@ class Information:
 
     @staticmethod
     # 수치형 데이터의 평균, 중위값 등 기본적 통계 지표를 출력하는 함수
-    def print_statistics_ind(data, col_name):
+    def print_statistics_ind(data, col_name, qlt=False):
         """
         :param data: (DataFrame) data
         :param col_name: (str) Column name for which you want to see indicators
+        :param qlt: (bool) If column is qualitative variable, this parameter is true
         :return: None
         """
-        print("Data Max : ", data[col_name].max())
-        print("Data Min : ", data[col_name].min())
-        print("Data Mean : ", data[col_name].mean())
-        print("Data Median : ", data[col_name].median())
-        print("Data Top 05% : ", np.percentile(data[col_name].values, 95))
-        print("Data Top 25% : ", np.percentile(data[col_name].values, 75))
-        print("Data Top 75% : ", np.percentile(data[col_name].values, 25))
-        print("Data Top 95%: ", np.percentile(data[col_name].values, 5))
-        print("Data Variance : {0: .3f}".format(data[col_name].var()))
-        print("Data Standard deviation: {0: .3f}".format(data[col_name].std()))
-        print()
-        plt.boxplot(data[col_name])
-        plt.show()
+        # 질적변수인 경우
+        if qlt:
+            print("Data category: ", data[col_name].unique())
+            print("Data category: ", data[col_name].value_counts(sort=False).values)
+
+            x_feature_ratio = data[col_name].value_counts(sort=False)
+            x_feature_index = x_feature_ratio.index
+
+            # x값 시각화
+            plt.plot(aspect='auto')
+            plt.pie(x_feature_ratio, labels=x_feature_index, autopct='%1.1f%%')
+            plt.title(str(col_name) + '\'s ratio in total')
+
+            plt.show()
+
+        # 양적 변수인 경우
+        else:
+            print("Data Max : ", data[col_name].max())
+            print("Data Min : ", data[col_name].min())
+            print("Data Mean : ", data[col_name].mean())
+            print("Data Median : ", data[col_name].median())
+            print("Data Top 05% : ", np.percentile(data[col_name].values, 95))
+            print("Data Top 25% : ", np.percentile(data[col_name].values, 75))
+            print("Data Top 75% : ", np.percentile(data[col_name].values, 25))
+            print("Data Top 95% : ", np.percentile(data[col_name].values, 5))
+            print("Data Variance : {0: .3f}".format(data[col_name].var()))
+            print("Data Standard deviation: {0: .3f}".format(data[col_name].std()))
+            print()
+            plt.boxplot(data[col_name])
+            plt.show()
 
 
 class Visualization:
