@@ -2,34 +2,41 @@ import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 
 
 # 기본 정보 출력 클래스
 class Information:
-    def __init__(self):
-        plt.rc('font', family='Malgun Gothic')
-        plt.text(0.3, 0.3, '한글', size=100)
+    def _set_kor_font(self):
+        # 한글 폰트 설정
+        self.FONT_PATH = "./NanumSquareB.ttf"
+        self.FONT_NAME = font_manager.FontProperties(fname=self.FONT_PATH).get_name()
+        plt.rc('font', family=self.FONT_NAME)
 
-    @staticmethod
     # 데이터의 기본정보를 출력하는 함수
-    def print_basic_info(data):
+    def print_basic_info(self, data):
         """
         :param data: (DataFrame) data
         :return: None
         """
+        # 한글 폰트 설정
+        self._set_kor_font()
+
         print("Data shape : ", data.shape, end='\n\n')
         print(data.info(), end='\n\n')
         print("Data Null Sum Percent \n", round(data.isnull().sum()/data.shape[0] * 100, 2), end='\n\n')
 
-    @staticmethod
     # 수치형 데이터의 평균, 중위값 등 기본적 통계 지표를 출력하는 함수
-    def print_statistics_ind(data, col_name, qlt=False):
+    def print_statistics_ind(self, data, col_name, qlt=False):
         """
         :param data: (DataFrame) data
         :param col_name: (str) Column name for which you want to see indicators
         :param qlt: (bool) If column is qualitative variable, this parameter is true
         :return: None
         """
+        # 한글 폰트 설정
+        self._set_kor_font()
+
         # 질적변수인 경우
         if qlt:
             print("Data category: ", data[col_name].unique())
