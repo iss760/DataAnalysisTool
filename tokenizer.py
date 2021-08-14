@@ -71,3 +71,4 @@ class Tokenizer:
         else:
             print("data type error")
             raise ValueError
+
