@@ -25,7 +25,7 @@ class Information:
         """
         print("Data shape : ", data.shape, end='\n\n')
         print(data.info(), end='\n\n')
-        print("Data Null Sum Percent \n", round(data.isnull().sum()/data.shape[0] * 100, 2), end='\n\n')
+        print("Data Null Sum Percent \n", round(data.isnull().sum() / data.shape[0] * 100, 2), end='\n\n')
 
     # 수치형 데이터의 평균, 중위값 등 기본적 통계 지표를 출력하는 함수
     @staticmethod
