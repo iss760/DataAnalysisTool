@@ -5,6 +5,50 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
 
+def show_box(df, col):
+    """
+    :param df: (DataFrame) 박스플롯을 그릴 데이터
+    :param col: (list[str]) 박스플롯을 그릴 데이터의 칼럼들 (수치형 데이터)
+    :return: None
+    """
+    # 연속형 변수 박스플롯 그리기
+    fig, axs = plt.subplots(1, len(col), figsize=[16, 4])
+    fig.subplots_adjust(wspace=0.5)
+    for i, col in enumerate(col):
+        axs[i].boxplot(df.loc[:, col])
+        axs[i].set_title(col)
+
+    plt.show()
+
+
+def show_pie(df, col, reverse_color=False):
+    """
+    :param df: (DataFrame) 파이차트를 그릴 데이터
+    :param col: (list[str]) 파이차트를 그릴 데이터의 칼럼들 (수치형 데이터)
+    :param reverse_color: (bool) 제목, 라벨, 수치 컬러를 화이트로 할지 여부
+    :return: None
+    """
+    # 범주형 변수 파이차트 그리기
+    fig, axs = plt.subplots(2, len(col), figsize=[16, 8])
+    fig.subplots_adjust(wspace=0.2, hspace=0.2)
+    for i, col in enumerate(col):
+        grp_df = df.groupby(by=col).size()
+        # print(grp_df.sort_values(ascending=False)[:5])
+        # print('unique val count: ', len(grp_df))
+        # print()
+        axs[0][i].pie(grp_df,
+                      autopct='%.1f%%',
+                      labels=grp_df.index,
+                      textprops={'color': "w" if reverse_color is True else 'black'})
+        axs[0][i].set_title(col, color='w' if reverse_color is True else 'black')
+
+        axs[1][i].table([grp_df.values.tolist()],
+                        colLabels=grp_df.index)
+        axs[1][i].axis('off')
+
+    plt.show()
+
+
 # 기본 정보 출력 클래스
 class Information:
     def __init__(self):
