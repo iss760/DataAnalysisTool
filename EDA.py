@@ -13,11 +13,11 @@ def show_box(df, col):
     """
     # 연속형 변수 박스플롯 그리기
     fig, axs = plt.subplots(1, len(col), figsize=[16, 4])
-    fig.subplots_adjust(wspace=0.5)
     for i, col in enumerate(col):
         axs[i].boxplot(df.loc[:, col])
         axs[i].set_title(col)
 
+    fig.tight_layout()
     plt.show()
 
 
@@ -29,23 +29,23 @@ def show_pie(df, col, reverse_color=False):
     :return: None
     """
     # 범주형 변수 파이차트 그리기
-    fig, axs = plt.subplots(2, len(col), figsize=[16, 8])
-    fig.subplots_adjust(wspace=0.2, hspace=0.2)
+    fig, axs = plt.subplots(1, len(col), figsize=[16, 8])
     for i, col in enumerate(col):
-        grp_df = df.groupby(by=col).size()
-        # print(grp_df.sort_values(ascending=False)[:5])
-        # print('unique val count: ', len(grp_df))
-        # print()
-        axs[0][i].pie(grp_df,
-                      autopct='%.1f%%',
-                      labels=grp_df.index,
-                      textprops={'color': "w" if reverse_color is True else 'black'})
-        axs[0][i].set_title(col, color='w' if reverse_color is True else 'black')
+        grp_df = df.groupby(by=col).size().sort_values(ascending=False)
+        axs[i].pie(grp_df,
+                   autopct='%.1f%%',
+                   labels=grp_df.index,
+                   textprops={'color': "w" if reverse_color is True else 'black'})
+        axs[i].set_title(col, color='w' if reverse_color is True else 'black')
 
-        axs[1][i].table([grp_df.values.tolist()],
-                        colLabels=grp_df.index)
-        axs[1][i].axis('off')
+        t = axs[i].table(np.array([grp_df.values.tolist()]).T,
+                         rowLabels=grp_df.index,
+                         bbox=[0.2, -0.5, 0.8, 0.5],
+                         cellLoc='center')
+        t.auto_set_font_size(False)
+        t.set_fontsize(8)
 
+    fig.tight_layout()
     plt.show()
 
 
