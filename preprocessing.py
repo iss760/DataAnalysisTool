@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+
 import re
 
 
@@ -58,23 +60,36 @@ def remove_outlier(df, cols, how='iqr'):
     return _df
 
 
-class NumericalTypeProcessing:
-    def get_outlier(self, data, col_name, weight=1.5):
-        q1 = np.percentile(data[col_name].values, 25)
-        q3 = np.percentile(data[col_name].values, 75)
-        iqr = q3 - q1
+def convert_outlier(df, cols, how='min-max'):
+    _df = df.copy()
+    cols = [cols] if type(cols) == str else cols    # 입력값 str 경우 처리
 
-        iqr_weight = iqr * weight
-        lowest = q1 - iqr_weight
-        highest = q3 + iqr_weight
+    # 입력값 예외처리
+    if type(cols) != list:
+        raise ValueError('Wrong input data type')
+    '''
+    미완성
+    '''
 
-        outlier_idx = data[col_name][(data[col_name] < lowest) | (data[col_name] > highest)].index
-        return outlier_idx
 
-    def remove_outlier_use_iqr(self, data, col_name, weight=1.5):
-        outlier_idx = self.get_outlier(data, col_name=col_name, weight=weight)    # 이상치 탐색
-        data.drop(outlier_idx, axis=0, inplace=True)    # 이상치 제거
-        return data
+# 데이터를 스케일링 해주는 함수
+def scaling(df, cols, how='min-max'):
+    """
+    :param df: (DataFrame) 스케일링 할 데이터
+    :param cols: (list[str]) 스케일링 할 데이터의 칼럼들
+    :param how: (str) 스케일링 방법 선택
+    :return: (DataFrame or Series) 스케일링된 데이터
+    """
+    if how == 'min-max':
+        scaler = MinMaxScaler()
+    elif how == 'robust':
+        scaler = RobustScaler()
+    elif how == 'standard':
+        scaler = StandardScaler()
+    else:
+        raise ValueError('Wrong input data type')
+
+    return scaler.fit_transform(df[cols])
 
 
 class TextTypeProcessing:
