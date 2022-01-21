@@ -3,6 +3,7 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+import seaborn as sns
 
 
 # 한글 폰트 설정 함수
@@ -41,27 +42,46 @@ def _get_iqr(data):
 
 
 # 박스플롯을 그려주는 함수
-def show_box(df, cols):
+def show_box(df, cols, clf_col=None):
     """
     :param df: (DataFrame) 박스플롯을 그릴 데이터
     :param cols: (list[str]) 박스플롯을 그릴 데이터의 칼럼들 (수치형 데이터)
+    :param clf_col (str) 클래스별 박스플롯을 그릴 경우, 클래스 칼럼
     :return: None
     """
     # 연속형 변수 박스플롯 그리기
     fig, axs = plt.subplots(1, len(cols), figsize=[16, 8])
     for i, col in enumerate(cols):
-        # 박스플롯 그리기
-        axs[i].boxplot(df.loc[:, col])
-        axs[i].set_title(col)
+        if clf_col is not None:
+            # 박스플롯 그리기
+            p = sns.boxplot(x=clf_col, y=col, data=df, orient='v', ax=axs[i])
 
-        # 테이블 그리기
-        iqr_dict = _get_iqr(df[col])
-        t = axs[i].table(np.array(list(iqr_dict.values())).reshape(-1, 1),
-                         rowLabels=list(iqr_dict.keys()),
-                         bbox=[0.2, -0.6, 0.8, 0.4])
-        # 테이블 폰트 사이즈 조정
-        t.auto_set_font_size(False)
-        t.set_fontsize(8)
+            # 테이블 그리기
+            iqr_df = pd.DataFrame(index=['q1', 'q3', 'iqr', 'median', 'min', 'max'])
+            for j, c in enumerate(df[clf_col].unique()):
+                iqr_df[c] = _get_iqr(df[df[clf_col] == c][col]).values()
+            t = axs[i].table(cellText=iqr_df.values,
+                             colLabels=list(iqr_df.columns),
+                             rowLabels=list(iqr_df.index),
+                             bbox=[0.2, -0.6, 0.8, 0.4])
+            # 테이블 폰트 사이즈 조정
+            t.auto_set_font_size(False)
+            t.set_fontsize(8)
+        else:
+            # 박스플롯 그리기
+            p = sns.boxplot(y=col, data=df, orient='v', ax=axs[i])
+
+            # 테이블 그리기
+            iqr_dict = _get_iqr(df[col])
+            t = axs[i].table(np.array(list(iqr_dict.values())).reshape(-1, 1),
+                             rowLabels=list(iqr_dict.keys()),
+                             bbox=[0.2, -0.6, 0.8, 0.4])
+            # 테이블 폰트 사이즈 조정
+            t.auto_set_font_size(False)
+            t.set_fontsize(8)
+
+        p.set(ylabel='')
+        axs[i].set_title(col)
 
     fig.tight_layout()
     plt.show()
