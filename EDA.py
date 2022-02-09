@@ -119,3 +119,16 @@ def show_pie(df, cols, reverse_color=False):
 
     fig.tight_layout()
     plt.show()
+
+
+def show_bar(df, cols, hue=None):
+    pass
+
+
+def show_scatter(df, cols, hue=None, max_per_class=1000):
+    if hue is None:
+        pass
+
+    if hue is not None:
+        classes = df['hue'].unique()
+        sample_df = pd.concat([df[df[c]] for c in classes])
