@@ -12,7 +12,7 @@ class Utility:
         :param name: (str) load file name
         :return: (json) loaded json
         """
-        with open(self.UTIL_PATH + name) as f:
+        with open(self.UTIL_PATH + name, 'r') as f:
             return json.load(f)
 
     # json 사전에 요소(element) 추가해주는 메서드
@@ -22,6 +22,16 @@ class Utility:
         :param elem: (dict) elements to be added
         :return: None
         """
+        # json 데이터 읽기
+        word2rep = self.load_util_json(name)
+
+        # 요소 추가
+        for k, v in elem:
+            word2rep[k] = v
+
+        # json 데이터 쓰기
+        with open(self.UTIL_PATH + name, 'w') as f:
+            json.dump(word2rep, f)
 
 
 class TextProcessing(Utility):
@@ -97,7 +107,7 @@ class TextProcessing(Utility):
         # HTML 모음
         self.html_tags = ['<em>', '</em>', '<e m>', '<br>', '</br>']
 
-        # 자주 쓰이는 밈 표현 한국어로 변환
+        # 자주 쓰이는 밈 표현
         self.meme = [r'ㅋ+', r'ㅎ+', r'ㅜ+', r'\^\^', r':\)', r'~+', r'!+']
 
         self.unicode_full2half = self.load_util_json('unicode_full2half.json')
@@ -149,7 +159,7 @@ class TextProcessing(Utility):
         :param col: (str or list) column name or columns name
         :return: converted data to half width from full width
         """
-        for k, v in self.grammar.items():
+        for k, v in self.grammar_typo2cor.items():
             df[col] = df[col].str.replace(k, v)
 
         return df
@@ -161,21 +171,21 @@ class TextProcessing(Utility):
         :param col: (str or list) column name or columns name
         :return: converted data to half width from full width
         """
-        for en, kr in self.en2kr.items():
+        for en, kr in self.grammar_en2kr.items():
             df[col].replace(to_replace=en, value=kr, regex=True, inplace=True)
 
         return df
 
     # 자주 쓰는 밈을 형태소 분석이 가능하도록 변환하는 메서드
     # 밈은 ㅋㅋㅋ, ㅎ, ^^ 등을 모두 포함함
-    def convert_meme(self, df, col):
+    def remove_meme(self, df, col):
         """
         :param df: (DataFrame) data
         :param col: (str or list) column name or columns name
         :return: converted data to half width from full width
         """
-        for k, v in self.meme.items():
-            df[col].replace(to_replace=k, value=v, regex=True, inplace=True)
+        for v in self.meme:
+            df[col].replace(to_replace='', value=v, regex=True, inplace=True)
 
         return df
 
