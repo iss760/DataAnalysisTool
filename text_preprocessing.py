@@ -39,7 +39,7 @@ class TextProcessing(Utility):
         super().__init__()
 
         # 기호별 유니코드
-        self.comma = re.compile(r'[᠂、︐︑﹐﹑፣꓾᠈߸꘍\u0326\uFF0C\uFF64]')
+        self.comma = re.compile(r'[,᠂、︐︑﹐﹑፣꓾᠈߸꘍\u0326\uFF0C\uFF64]')
         self.colon = re.compile(r'[:˸܃܄፥᠄⁝∶꛴꞉﹕\uFF1A]')
         self.dash = re.compile(r'[\-\u2012-\u2015\u2053\u301C\u3030\uFF0D\uFF70]')
         self.elipse = re.compile(r'[…ຯ᠁ฯ⋮⋯⋰⋱︙]')
@@ -78,12 +78,12 @@ class TextProcessing(Utility):
         self.korean_whole = re.compile(r'[ㄱ-ㅎㅏ-ㅣ가-힣]')
         self.korean = re.compile(r'[가-힣]')
         self.chinese = re.compile(
-            r'[\u4E00-\u9FFF\u3400-\u4DBF\u20000-\u2A6DF\u2A700-\u2B73F\u2B740-\u2B81F'
-            r'\u2B820-\u2CEAF\uF900-\uFAFF\u2F800-\u2FA1F]')
+            r'[\u4E00-\u9FFF\u3400-\u4DBF\u2000-\u2A6D\u2A70-\u2B73\u2B74-\u2B81'
+            r'\u2B82-\u2CEA\uF900-\uFAFF\u2F80-\u2FA1]')
         self.japanese = re.compile(r'[\u3040-\u309F\u30A0-\u30FF]')
         self.arabic = re.compile(
             r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u10E60-'
-            r'\u10E7F\u1EC70-\u1ECBF\u1EE00-\u1EEFF]')
+            r'\u10E7\u1EC7-\u1ECB\u1EE0-\u1EEF]')
 
         # 언어별 실 사용 유니코드 범위
         self.not_en = re.compile(r'[^A-Za-z0-9.,\'!?#\u0020\n]')
@@ -91,18 +91,18 @@ class TextProcessing(Utility):
         self.not_ko_en = re.compile(r'[^A-Za-z0-9.,!?#\u0020\n가-힣]')
         self.not_latin_en = re.compile(r'[^A-Za-z0-9.,\'!?#\u0020\n\u00C0-\u02AF]')
         self.not_cn_en = re.compile(
-            r'[^A-Za-z0-9.,\'!?#\u0020\n\u4E00-\u9FFF\u3400-\u4DBF\u20000-\u2A6DF\u2A700-\u2B73'
-            r'F\u2B740-\u2B81F\u2B820-\u2CEAF\uF900-\uFAFF\u2F800-\u2FA1F]')
+            r'[^A-Za-z0-9.,\'!?#\u0020\n\u4E00-\u9FFF\u3400-\u4DBF\u2000-\u2A6D\u2A70-\u2B73'
+            r'\u2B740-\u2B81\u2B820-\u2CEA\uF900-\uFAFF\u2F80-\u2FA1]')
         self.not_cn_jp_en = re.compile(
-            r'[^A-Za-z0-9.,\'!?#\u0020\n\u4E00-\u9FFF\u3400-\u4DBF\u20000-\u2A6DF\u2A700-\u2B73'
-            r'F\u2B740-\u2B81F\u2B820-\u2CEAF\uF900-\uFAFF\u2F800-\u2FA1F\u3040-\u309F\u30A0-\u30FF]')
+            r'[^A-Za-z0-9.,\'!?#\u0020\n\u4E00-\u9FFF\u3400-\u4DBF\u2000-\u2A6D\u2A70-\u2B73'
+            r'\u2B74-\u2B81\u2B82-\u2CEA\uF900-\uFAFF\u2F80-\u2FA1\u3040-\u309F\u30A0-\u30FF]')
         self.not_ru_en = re.compile(
             r'[^A-Za-z0-9.,\'!?#\u0020\n\u0400-\u04FF\u0500-\u052F\u2DE0-\u2DFF\uA640-\uA69F\u1C80-'
             r'\u1C8F\u1D2B\u1D78\uFE2E-\uFE2F]')
         self.not_gr_en = re.compile(r'[^A-Za-z0-9.,\'!?#\u0020\n\u0370-\u03FF\u1F00-\u1FFF]')
         self.not_arabic_en = re.compile(
-            r'[^A-Za-z0-9.,\'!?#\u0020\n\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-'
-            r'\uFEFF\u10E60-\u10E7F\u1EC70-\u1ECBF\u1EE00-\u1EEFF]')
+            r'[^A-Za-z0-9.,\'!?#\u0020\n\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF'
+            r'\uFE70-\uFEFF\u10E6-\u10E7\u1EC7-\u1ECB\u1EE0-\u1EEF]')
 
         # HTML 모음
         self.html_tags = ['<em>', '</em>', '<e m>', '<br>', '</br>']
