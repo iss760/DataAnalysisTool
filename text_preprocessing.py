@@ -23,10 +23,13 @@ class Utility:
         :return: None
         """
         # json 데이터 읽기
-        word2rep = self.load_util_json(name)
+        try:
+            word2rep = self.load_util_json(name)
+        except FileNotFoundError:
+            word2rep = {}
 
         # 요소 추가
-        for k, v in elem:
+        for k, v in elem.items():
             word2rep[k] = v
 
         # json 데이터 쓰기
@@ -39,36 +42,7 @@ class TextProcessing(Utility):
         super().__init__()
 
         # 기호별 유니코드
-        self.comma = re.compile(r'[,᠂、︐︑﹐﹑፣꓾᠈߸꘍\u0326\uFF0C\uFF64]')
-        self.colon = re.compile(r'[:˸܃܄፥᠄⁝∶꛴꞉﹕\uFF1A]')
-        self.dash = re.compile(r'[\-\u2012-\u2015\u2053\u301C\u3030\uFF0D\uFF70]')
-        self.elipse = re.compile(r'[…ຯ᠁ฯ⋮⋯⋰⋱︙]')
-        self.exclamation = re.compile(
-            r'[!\uFF01\u01C3\u203C\u2048\u2049\u26A0\u2755\u2757\u2762\u2763'
-            r'\uA71D-\uA71F\uFE57\u055C\u07F9\u109F\u1944]')
-        self.bullet = re.compile(
-            r'[\u318D\u00B7\u0387\u05BC\u16EB\u2022\u2023\u2027\u2043\u204C\u204D'
-            r'\u2218\u2219\u22C5\u23FA\u25CF\u25E6\u26AB\u2981\u2E30\u2E31\u2E33\u30FB\uA78F\uFF65]')
-        self.hyphen = re.compile(
-            r'[\u00AF\u2013\u2015\u2212\u00AD\u2010\u2011\u058A\u1806\u2E17\u30FB\uFE63\uFF0D\uFF65]')
-        self.double_hyphen = re.compile(r'[=\u207C\u208C\u2A74\u1400\u2E17\u2E40\u30A0\uA78A\u3013\uFF1D]')
-        self.question_mark = re.compile(
-            r'[\u003F\u00BF\u055E\u061F\u2E2E\uFF1F\u1367\uA60F\u2047\uFE56\u2048\u2049'
-            r'\u203D\u0294\uFFFD\u225F\u2A7B\u2A7C]')
-        self.single_quotation_mark = re.compile(
-            r'[\'ʻʽ،՝ʼ`\u00B4\u0312-\u0315\uA6F5\u2018\u2019\uFF07\uFF40]')
-        self.double_quotation_mark = re.compile(r'[\u0022\u201E\u201C\u201D\uFF02\u3003\uE057]')
-        self.corner_bracket_left = re.compile(r'[\u300C\uFE41\u300E\uFE43\uFF62]')
-        self.corner_bracket_right = re.compile(r'[\u300D\uFE42\u300F\uFE44\uFF63]')
-        self.round_bracket_left = re.compile(r'[(\uFE35]')
-        self.round_bracket_right = re.compile(r'[)\uFE36]')
-        self.angle_bracket_left = re.compile(r'[<\u3008\u2329\uFE3F\u300A\uFE3D\u3014\uFE5D]')
-        self.angle_bracket_right = re.compile(r'[>\u3009\u232A\uFE40\u300B\uFE3E\u3015\uFE5E]')
-        self.box_bracket_left = re.compile(r'[\[\u3010\uFE3B\uFF3B]')
-        self.box_bracket_right = re.compile(r'[]\u3011\uFE3C\uFF3D]')
-        self.fullstop = re.compile(r'[.\u00B0\u3002\uFE12\uFE52\uFF61\uFF0E]')
-        self.white_space = re.compile(r'[\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000\u3164\uFFA0]')
-        self.ascii_symbol = re.compile(r'[\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E]')
+        self.REX_SYMBOL2UNICODE = self.load_util_json('rex_symbol2unicode.json')
 
         # 언어별 유니코드 범위
         self.latin = re.compile(r'[\u00C0-\u02AF]')
@@ -114,6 +88,11 @@ class TextProcessing(Utility):
         self.grammar_typo2cor = self.load_util_json('grammar_typo2cor.json')
         self.grammar_en2kr = self.load_util_json('grammar_en2kr.json')
         self.kiwi_tag2pos = self.load_util_json('kiwi_tag2pos.json')    # 긍정지시사: ~이다 / 부정지시가: ~아니다
+
+    # 특수기호 유니코드 정규화 메서드
+    def normalize_special_symbol(self, doc):
+        pass
+
 
     # 영어로된 kiwi 태그를 한국어 형태소로 변환하는 함수
     def convert_tag2pos(self, s):
@@ -213,3 +192,9 @@ class Filtering:
 
     def filtering(self, data, col_name):
         data = data[~data[col_name].str.contains('|'.join(self.FILTERING_KEYWORD), na=False)]
+
+
+if __name__ == '__main__':
+    tp = TextProcessing()
+    print(tp.REX_SYMBOL2UNICODE)
+    print(type(tp.REX_SYMBOL2UNICODE))
