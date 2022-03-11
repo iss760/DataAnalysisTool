@@ -41,9 +41,6 @@ class TextProcessing(Utility):
     def __init__(self):
         super().__init__()
 
-        # 기호별 유니코드
-        self.REX_SYMBOL2UNICODE = self.load_util_json('rex_symbol2unicode.json')
-
         # 언어별 유니코드 범위
         self.latin = re.compile(r'[\u00C0-\u02AF]')
         self.greek = re.compile(r'[\u0370-\u03FF\u1F00-\u1FFF]')
@@ -84,9 +81,23 @@ class TextProcessing(Utility):
         # 자주 쓰이는 밈 표현
         self.meme = [r'ㅋ+', r'ㅎ+', r'ㅜ+', r'\^\^', r':\)', r'~+', r'!+']
 
+        # 기호별 유니코드
+        # keys : comma, colon, dash, exclamation, bullet, hyphen, double_hyphen, question_mark, single_quotation_mark,
+        #        corner_bracket_left, corner_bracket_right, round_bracket_left, angle_bracket_left, angle_bracket_right,
+        #        box_bracket_left, box_bracket_right, full_stop, white_space, ascii_symbol
+        self.REX_SYMBOL2UNICODE = self.load_util_json('rex_symbol2unicode.json')
+        self.REX_SYMBOL2UNICODE = dict(map(lambda x: (x[0], re.compile(x[1])), self.REX_SYMBOL2UNICODE.items()))
+
+        # 전각 반자 유니코드 (전각: 반자)
         self.unicode_full2half = self.load_util_json('unicode_full2half.json')
+
+        # 자주 쓰이는 오타와 정답 (오타: 정답)
         self.grammar_typo2cor = self.load_util_json('grammar_typo2cor.json')
+
+        # 자주 쓰이는 영어표현의 한국어 표현 (영어: 한국어)
         self.grammar_en2kr = self.load_util_json('grammar_en2kr.json')
+
+        # 키위 형태소 분석기의 형태소 영어명과 한국명 (형태소 영어명: 형태소 한국명)
         self.kiwi_tag2pos = self.load_util_json('kiwi_tag2pos.json')    # 긍정지시사: ~이다 / 부정지시가: ~아니다
 
     # 특수기호 유니코드 정규화 메서드
@@ -196,5 +207,6 @@ class Filtering:
 
 if __name__ == '__main__':
     tp = TextProcessing()
-    print(tp.REX_SYMBOL2UNICODE)
-    print(type(tp.REX_SYMBOL2UNICODE))
+    print(tp.REX_SYMBOL2UNICODE.keys())
+    for i in tp.REX_SYMBOL2UNICODE.keys():
+        print(i, end=' ')
