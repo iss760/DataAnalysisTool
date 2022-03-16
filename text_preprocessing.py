@@ -84,6 +84,9 @@ class TextProcessing(Utility):
         # 자주 쓰이는 오타와 정답 (오타: 정답)
         self.GRAMMAR_TYPO2COR = self.load_util_json('grammar_typo2cor.json')
 
+        # 자주 쓰이는 축약어(한자 포함)의 오리지날 표현 (축약어: 오리지날)
+        self.GRAMMAR_ABBR2COR = self.load_util_json('grammar_abbr2cor.json')
+
         # 자주 쓰이는 영어표현의 한국어 표현 (영어: 한국어)
         self.GRAMMAR_EN2KR = self.load_util_json('grammar_en2kr.json')
 
@@ -196,6 +199,9 @@ class Filtering:
 
 if __name__ == '__main__':
     tp = TextProcessing()
-    print(tp.REX_SYMBOL2UNICODE.keys())
-    for i in tp.REX_SYMBOL2UNICODE.keys():
-        print(i, end=' ')
+    print(tp.GRAMMAR_ABBR2COR)
+
+    # tp.add_util_json('grammar_abbr2cor.json', tp.GRAMMAR_ABBR2COR)
+    # print(tp.GRAMMAR_ABBR2COR.keys())
+    # for k, v in tp.GRAMMAR_ABBR2COR.items():
+    #     print(k, v)
