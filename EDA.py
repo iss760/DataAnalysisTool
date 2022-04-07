@@ -121,8 +121,36 @@ def show_pie(df, cols, reverse_color=False):
     plt.show()
 
 
-def show_bar(df, cols, hue=None):
-    pass
+def show_bar(df, cols):
+    """
+    :param df: (DataFrame) 바 차트를 그릴 데이터
+    :param cols: (list[str]) 바 차트를 그릴 데이터의 칼럼들 (수치형 데이터)
+    :return: None
+    """
+    # 범주형 변수 바차트 그리기
+    fig, axs = plt.subplots(1, len(cols), figsize=[16, 4])
+    for i, col in enumerate(cols):
+        # 카테고리별 개수 오름차순 정렬
+        grp_df = df.groupby(by=col).size().sort_index(ascending=True)
+
+        # 컬러 설정
+        colors = sns.color_palette('Paired', len(grp_df))
+
+        # 바차트 그리기
+        axs[i].bar(x=grp_df.index,
+                   height=grp_df.values,
+                   color=colors)
+        axs[i].set_title(col, color='w')
+
+        # 바차트에 숫자 추가
+        for j, v in enumerate(grp_df.index):
+            axs[i].text(v, grp_df.values[j], grp_df.values[j],
+                        fontsize=8,
+                        horizontalalignment='center',
+                        verticalalignment='bottom')
+
+    fig.tight_layout()
+    plt.show()
 
 
 def show_scatter(df, cols, hue=None, max_per_class=1000):
