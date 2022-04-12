@@ -127,27 +127,34 @@ def show_bar(df, cols):
     :param cols: (list[str]) 바 차트를 그릴 데이터의 칼럼들 (수치형 데이터)
     :return: None
     """
+    cnt = 0
+    for col in cols:
+        cnt += len(df[col].unique())
+
     # 범주형 변수 바차트 그리기
-    fig, axs = plt.subplots(1, len(cols), figsize=[16, 4])
+    fig, axs = plt.subplots(1, len(cols), figsize=[cnt, 4])
     for i, col in enumerate(cols):
         # 카테고리별 개수 오름차순 정렬
-        grp_df = df.groupby(by=col).size().sort_index(ascending=True)
+        df_cnt = df[col].value_counts().sort_index(ascending=True)
 
         # 컬러 설정
-        colors = sns.color_palette('Paired', len(grp_df))
+        colors = sns.color_palette('dark')
+
+        # 복수 차트 or 단수 차트 처리
+        _axs = axs[i] if type(axs) is np.ndarray else axs
 
         # 바차트 그리기
-        axs[i].bar(x=grp_df.index,
-                   height=grp_df.values,
-                   color=colors)
-        axs[i].set_title(col, color='w')
+        _axs.bar(x=df_cnt.index,
+                 height=df_cnt.values,
+                 color=colors)
+        _axs.set_title(col, color='black')
 
         # 바차트에 숫자 추가
-        for j, v in enumerate(grp_df.index):
-            axs[i].text(v, grp_df.values[j], grp_df.values[j],
-                        fontsize=8,
-                        horizontalalignment='center',
-                        verticalalignment='bottom')
+        for j, v in enumerate(df_cnt.index):
+            _axs.text(v, df_cnt.values[j], df_cnt.values[j],
+                      fontsize=8,
+                      horizontalalignment='center',
+                      verticalalignment='bottom')
 
     fig.tight_layout()
     plt.show()
