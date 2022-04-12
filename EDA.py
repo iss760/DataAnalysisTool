@@ -101,18 +101,21 @@ def show_pie(df, cols, reverse_color=False):
         # 카테고리별 개수 내림차순 정렬
         grp_df = df.groupby(by=col).size().sort_values(ascending=False)
 
+        # 복수 차트 or 단수 차트 처리
+        _axs = axs[i] if type(axs) is np.ndarray else axs
+
         # 파이차트 그리기
-        axs[i].pie(grp_df,
-                   autopct='%.1f%%',
-                   labels=grp_df.index,
-                   textprops={'color': "w" if reverse_color is True else 'black'})
-        axs[i].set_title(col, color='w' if reverse_color is True else 'black')
+        _axs.pie(grp_df,
+                 autopct='%.1f%%',
+                 labels=grp_df.index,
+                 textprops={'color': "w" if reverse_color is True else 'black'})
+        _axs.set_title(col, color='w' if reverse_color is True else 'black')
 
         # 테이블 그리기
-        t = axs[i].table(np.array(grp_df.values.tolist()).reshape(-1, 1),
-                         rowLabels=grp_df.index,
-                         bbox=[0.2, -0.5, 0.8, 0.5],
-                         cellLoc='center')
+        t = _axs.table(np.array(grp_df.values.tolist()).reshape(-1, 1),
+                       rowLabels=grp_df.index,
+                       bbox=[0.2, -0.5, 0.8, 0.5],
+                       cellLoc='center')
         # 테이블 폰트 사이즈 조정
         t.auto_set_font_size(False)
         t.set_fontsize(8)
