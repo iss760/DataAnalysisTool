@@ -49,9 +49,15 @@ def show_box(df, cols, clf_col=None):
     :param clf_col (str) 클래스별 박스플롯을 그릴 경우, 클래스 칼럼
     :return: None
     """
+    # 칼럼 입력 값 형 처리
+    cols = [cols] if type(cols) is str else cols
+
     # 연속형 변수 박스플롯 그리기
-    fig, axs = plt.subplots(1, len(cols), figsize=[16, 8])
+    fig, axs = plt.subplots(1, len(cols), figsize=[3 * len(cols), 6])
     for i, col in enumerate(cols):
+        # 복수 차트 or 단수 차트 처리
+        _axs = axs[i] if type(axs) is np.ndarray else axs
+
         if clf_col is not None:
             # 박스플롯 그리기
             p = sns.boxplot(x=clf_col, y=col, data=df, orient='v', ax=axs[i])
@@ -60,28 +66,28 @@ def show_box(df, cols, clf_col=None):
             iqr_df = pd.DataFrame(index=['q1', 'q3', 'iqr', 'median', 'min', 'max'])
             for j, c in enumerate(df[clf_col].unique()):
                 iqr_df[c] = _get_iqr(df[df[clf_col] == c][col]).values()
-            t = axs[i].table(cellText=iqr_df.values,
-                             colLabels=list(iqr_df.columns),
-                             rowLabels=list(iqr_df.index),
-                             bbox=[0.2, -0.6, 0.8, 0.4])
+            t = _axs.table(cellText=iqr_df.values,
+                           colLabels=list(iqr_df.columns),
+                           rowLabels=list(iqr_df.index),
+                           bbox=[0.2, -0.6, 0.8, 0.4])
             # 테이블 폰트 사이즈 조정
             t.auto_set_font_size(False)
             t.set_fontsize(8)
         else:
             # 박스플롯 그리기
-            p = sns.boxplot(y=col, data=df, orient='v', ax=axs[i])
+            p = sns.boxplot(y=col, data=df, orient='v', ax=_axs)
 
             # 테이블 그리기
             iqr_dict = _get_iqr(df[col])
-            t = axs[i].table(np.array(list(iqr_dict.values())).reshape(-1, 1),
-                             rowLabels=list(iqr_dict.keys()),
-                             bbox=[0.2, -0.6, 0.8, 0.4])
+            t = _axs.table(np.array(list(iqr_dict.values())).reshape(-1, 1),
+                           rowLabels=list(iqr_dict.keys()),
+                           bbox=[0.2, -0.6, 0.8, 0.4])
             # 테이블 폰트 사이즈 조정
             t.auto_set_font_size(False)
             t.set_fontsize(8)
 
         p.set(ylabel='')
-        axs[i].set_title(col)
+        _axs.set_title(col)
 
     fig.tight_layout()
     plt.show()
@@ -91,29 +97,33 @@ def show_box(df, cols, clf_col=None):
 def show_pie(df, cols, reverse_color=False):
     """
     :param df: (DataFrame) 파이차트를 그릴 데이터
-    :param cols: (list[str]) 파이차트를 그릴 데이터의 칼럼들 (수치형 데이터)
+    :param cols: (list[str] or str) 파이차트를 그릴 데이터의 칼럼들 (수치형 데이터)
     :param reverse_color: (bool) 제목, 라벨, 수치 컬러를 화이트로 할지 여부
     :return: None
     """
+    # 칼럼 입력 값 형 처리
+    cols = [cols] if type(cols) is str else cols
+
     # 범주형 변수 파이차트 그리기
-    fig, axs = plt.subplots(1, len(cols), figsize=[16, 8])
+    fig, axs = plt.subplots(1, len(cols), figsize=[3 * len(cols), 6])
+
     for i, col in enumerate(cols):
         # 카테고리별 개수 내림차순 정렬
-        grp_df = df.groupby(by=col).size().sort_values(ascending=False)
+        df_cnt = df[col].value_counts().sort_index(ascending=True)
 
         # 복수 차트 or 단수 차트 처리
         _axs = axs[i] if type(axs) is np.ndarray else axs
 
         # 파이차트 그리기
-        _axs.pie(grp_df,
+        _axs.pie(df_cnt,
                  autopct='%.1f%%',
-                 labels=grp_df.index,
+                 labels=df_cnt.index,
                  textprops={'color': "w" if reverse_color is True else 'black'})
         _axs.set_title(col, color='w' if reverse_color is True else 'black')
 
         # 테이블 그리기
-        t = _axs.table(np.array(grp_df.values.tolist()).reshape(-1, 1),
-                       rowLabels=grp_df.index,
+        t = _axs.table(np.array(df_cnt.values.tolist()).reshape(-1, 1),
+                       rowLabels=df_cnt.index,
                        bbox=[0.2, -0.5, 0.8, 0.5],
                        cellLoc='center')
         # 테이블 폰트 사이즈 조정
