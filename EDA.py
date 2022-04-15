@@ -180,3 +180,58 @@ def show_scatter(df, cols, hue=None, max_per_class=1000):
     if hue is not None:
         classes = df['hue'].unique()
         sample_df = pd.concat([df[df[c]] for c in classes])
+
+
+# 변수의 분포를 보여주는 함수
+def show_distribution(df, col):
+    """
+    :param df: (DataFrame) 데이터
+    :param col: (str) 분포를 볼 칼럼
+    :return: None
+    """
+    # 카디널리티 계산
+    cardinality = len(df[col].unique())
+
+    # 카디널리티가 작은 경우 (범주형에 가까운)
+    if cardinality < 20:
+        fig, axs = plt.subplots(1, 2, figsize=(4 + cardinality, 4))
+
+        # 파이차트, 바차트 그리기
+        df_cnt = df[col].value_counts()
+        axs[0].pie(df_cnt, labels=df_cnt.index, autopct='%1.1f')
+        sns.barplot(x=df_cnt.index, y=df_cnt.values, data=df, ax=axs[1])
+
+        # 바차트에 숫자 추가
+        for i, v in enumerate(df_cnt.index):
+            axs[1].text(v, df_cnt.values[i], df_cnt.values[i],
+                        fontsize=8,
+                        horizontalalignment='center',
+                        verticalalignment='bottom')
+
+        axs[0].set_title(col + ' Pie Chart')
+        axs[1].set_title(col + ' Bar Chart')
+
+        fig.tight_layout()
+
+    # 카디널리티가 큰 경우 (연속형에 가까운)
+    else:
+        fig, axs = plt.subplots(1, 2, figsize=(8, 4))
+
+        # 박스플롯, 히스토그램 그리기
+        sns.boxplot(x=col, data=df, orient='h', ax=axs[0])
+        sns.histplot(x=col, data=df, bins=50, ax=axs[1])
+
+        axs[0].set_title(col + ' Box Chart')
+        axs[1].set_title(col + ' Hist Chart')
+
+    plt.show()
+
+
+def show_corr(df, x_col, y_col):
+    x_crd = len(df[x_col].unique())
+    y_crd = len(df[y_col].unique())
+    crd_threshold = 20
+
+    if x_crd < crd_threshold and y_crd < crd_threshold:
+        pass
+
