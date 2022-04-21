@@ -137,15 +137,19 @@ def show_pie(df, cols, reverse_color=False):
 def show_bar(df, cols):
     """
     :param df: (DataFrame) 바 차트를 그릴 데이터
-    :param cols: (list[str]) 바 차트를 그릴 데이터의 칼럼들 (수치형 데이터)
+    :param cols: (list[str] or str) 바 차트를 그릴 데이터의 칼럼명 들 (카디널리티가 작은 범주형 데이터)
     :return: None
     """
+    # 칼럼 입력 값 형 처리
+    cols = [cols] if type(cols) is str else cols
+
     cnt = 0
     for col in cols:
         cnt += len(df[col].unique())
 
     # 범주형 변수 바차트 그리기
     fig, axs = plt.subplots(1, len(cols), figsize=[cnt, 4])
+
     for i, col in enumerate(cols):
         # 카테고리별 개수 오름차순 정렬
         df_cnt = df[col].value_counts().sort_index(ascending=True)
