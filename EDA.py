@@ -177,15 +177,6 @@ def show_bar(df, cols):
     plt.show()
 
 
-def show_scatter(df, cols, hue=None, max_per_class=1000):
-    if hue is None:
-        pass
-
-    if hue is not None:
-        classes = df['hue'].unique()
-        sample_df = pd.concat([df[df[c]] for c in classes])
-
-
 # 변수의 분포를 보여주는 함수
 def show_distribution(df, col):
     """
@@ -236,6 +227,8 @@ def show_corr(df, x_col, y_col):
     y_crd = len(df[y_col].unique())
     crd_threshold = 20
 
-    if x_crd < crd_threshold and y_crd < crd_threshold:
-        pass
+        axs[0].set_title(col + ' Hist Chart')
+
+    fig.tight_layout()
+    plt.show()
 
