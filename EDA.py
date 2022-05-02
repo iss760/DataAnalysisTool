@@ -222,10 +222,44 @@ def show_distribution(df, col):
     plt.show()
 
 
-def show_corr(df, x_col, y_col):
-    x_crd = len(df[x_col].unique())
-    y_crd = len(df[y_col].unique())
-    crd_threshold = 20
+def show_corr_target(df, col, target_col):
+    """
+    :param df: (DataFrame) 데이터
+    :param col: (str) 분포를 볼 칼럼명
+    :param target_col: (str) 비교할 타겟 칼럼명
+    :return: None
+    """
+    # 카디널리티 계산
+    cardinality = len(df[col].unique())
+
+    # 카디널리티가 작은 경우 (범주형에 가까운)
+    if cardinality < 20:
+        fig, axs = plt.subplots(1, 2, figsize=(6 + cardinality, 4))
+
+        # 누적 바차트 그리기
+        sns.countplot(x=col, hue=target_col, data=df, ax=axs[0], dodge=False)
+        sns.histplot(x=col, hue=target_col, data=df, ax=axs[1],
+                     multiple='fill', stat='probability', shrink=0.8, common_norm=False)
+
+        # 차트에 숫자 표시
+        for c in axs[0].containers:
+            axs[0].bar_label(c, label_type='center')
+
+        # 차트에 숫자 표시
+        for c in axs[1].containers:
+            print(c)
+            axs[1].bar_label(c, label_type='center', fmt='%.2f')
+
+        axs[0].set_title('%s: %s Bar Chart' % (col, target_col))
+        axs[1].set_title('%s: %s Percent Chart' % (col, target_col))
+
+    # 카디널리티가 큰 경우 (연속형에 가까운)
+    else:
+        fig, axs = plt.subplots(1, 2, figsize=(8, 4))
+
+        # 박스플롯, 히스토그램 그리기
+        sns.boxplot(x=col, data=df, orient='h', ax=axs[0])
+        sns.histplot(x=col, data=df, bins=50, ax=axs[1])
 
         axs[0].set_title(col + ' Hist Chart')
 
