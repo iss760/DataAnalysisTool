@@ -134,6 +134,7 @@ def show_pie(df, cols, reverse_color=False):
     plt.show()
 
 
+# 바차트를 그려주는 함수
 def show_bar(df, cols):
     """
     :param df: (DataFrame) 바 차트를 그릴 데이터
@@ -235,7 +236,7 @@ def show_corr_target(df, col, target_col):
     crd_threshold = 20
 
     # x, y 모두 카디널리티가 작은 경우 (범주형에 가까운)
-    if crd_x < crd_threshold and crd_y < crd_threshold:
+    if (crd_x < crd_threshold) and (crd_y < crd_threshold):
         fig, axs = plt.subplots(1, 2, figsize=(6 + crd_x, 4))
 
         # 누적 바차트, 퍼센트 히스토그램 그리기
@@ -251,17 +252,16 @@ def show_corr_target(df, col, target_col):
         axs[0].set_title('%s: %s Bar Chart' % (col, target_col))
         axs[1].set_title('%s: %s Percent Chart' % (col, target_col))
 
-    # 카디널리티가 큰 경우 (연속형에 가까운)
-    else:
+    # x의 카디널리티가 크고 (연속형에 가까운), y의 카디널리티가 작은 경우
+    elif (crd_x > crd_threshold) and (crd_y < crd_threshold):
         fig, axs = plt.subplots(1, 2, figsize=(8, 4))
 
-        # 박스플롯, 히스토그램 그리기
-        sns.kdeplot(x=col, data=df, shade=True)
-        sns.kdeplot(x=col, data=df, shade=True)
-        sns.boxplot(x=col, data=df, orient='h', ax=axs[0])
-        sns.histplot(x=col, data=df, bins=50, ax=axs[1])
+        # 확률 밀도 함수 그리기
+        sns.kdeplot(x=col, hue=target_col, data=df, ax=axs[0], shade=True)
+        sns.boxplot(x=target_col, y=col, data=df, ax=axs[1], orient='v')
 
-        axs[0].set_title(col + ' Hist Chart')
+        axs[0].set_title(col + ' KDE Chart')
+        axs[1].set_title(col + 'Box Chart')
 
     fig.tight_layout()
     plt.show()
